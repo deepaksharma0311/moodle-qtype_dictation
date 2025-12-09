@@ -229,6 +229,10 @@ class qtype_dictation extends question_type {
         return 0;
     }
 
+    public function can_analyse_responses() {
+        return false;
+    }
+
     /**
      * Get possible responses for the question.
      *
