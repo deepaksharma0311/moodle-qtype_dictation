@@ -91,8 +91,7 @@ class qtype_dictation extends question_type {
         
         $context = $question->context;
         $result = new stdClass();
-       //  print_r($question);
-       // exit();
+        
         // Save options to database
         $options = $DB->get_record('qtype_dictation_options', array('questionid' => $question->id));
         if (!$options) {
@@ -132,9 +131,6 @@ class qtype_dictation extends question_type {
         $gaps = array();
         preg_match_all('/\[([^\]]+)\]/', $transcript, $matches);
         
-        // foreach ($matches[1] as $gap) {
-        //     $gaps[] = trim($gap);
-        // }
         foreach ($matches[1] as $gap) {
             // Check if gap contains multiple comma-separated answers
             if (strpos($gap, ',') !== false) {
@@ -257,17 +253,18 @@ class qtype_dictation extends question_type {
         
         foreach ($gaps as $index => $gap) {
             // Handle multiple correct answers per gap
-            $correctAnswers = is_array($gap) ? $gap : array($gap);
-            $gapresponses = array();
+            $correct_answers = is_array($gap) ? $gap : array($gap);
+            $gap_responses = array();
             
             // Add each correct answer as a possible response with grade 1
-            foreach ($correctAnswers as $correct) {
-                $gapresponses[$correct] = new question_classified_response($correct, 1.0, $correct);
+            foreach ($correct_answers as $correct) {
+                $gap_responses[$correct] = new question_classified_response($correct, 1.0, $correct);
             }
             
             // Add null response for incorrect answers
-            $gapresponses[null] = new question_classified_response(null, 0.0, get_string('incorrect', 'qtype_dictation'));
-        
+            $gap_responses[null] = new question_classified_response(null, 0.0, get_string('incorrect', 'qtype_dictation'));
+            
+            $responses['gap_' . $index] = $gap_responses;
         }
         
         return $responses;
@@ -294,9 +291,9 @@ class qtype_dictation extends question_type {
             $exporturl = new moodle_url('/question/type/dictation/export_csv.php', 
                 array('questionid' => $question->id));
             $actions[] = $OUTPUT->action_link($exporturl, 
-                'Export to CSV' . " ($attemptcount)", 
+                get_string('exportcsvwithcount', 'qtype_dictation', $attemptcount), 
                 null, 
-                array('title' =>  'Export to CSV')
+                array('title' => get_string('exportcsv', 'qtype_dictation'))
             );
         }
         

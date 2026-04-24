@@ -37,9 +37,6 @@ class qtype_dictation_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         global $PAGE;
 
-        // Add CSS and JavaScript
-        $PAGE->requires->css('/question/type/dictation/styles.css');
-        
         // Audio enable/disable toggle
         $mform->addElement('checkbox', 'enableaudio', get_string('enableaudio', 'qtype_dictation'),
             get_string('enableaudio_help', 'qtype_dictation'));
@@ -115,9 +112,6 @@ class qtype_dictation_edit_form extends question_edit_form {
         // Preview button
         $mform->addElement('button', 'previewbtn', get_string('preview', 'qtype_dictation'),
             array('id' => 'dictation-preview-btn', 'class' => 'btn btn-secondary'));
-
-        // Add JavaScript for live preview
-        //$PAGE->requires->js_call_amd('qtype_dictation/edit_form', 'init');
     }
 
     /**
@@ -128,8 +122,7 @@ class qtype_dictation_edit_form extends question_edit_form {
      */
     protected function data_preprocessing($question) {
         $question = parent::data_preprocessing($question);
-        //print_r($question->options);
-        //exit();
+        
         if (!empty($question->options)) {
             $question->transcript = $question->options->transcript;
             $question->maxplays = $question->options->maxplays;
@@ -139,7 +132,6 @@ class qtype_dictation_edit_form extends question_edit_form {
             $question->leftaligntext = isset($question->options->leftaligntext) ? $question->options->leftaligntext : 0;
         }
 
-       
         // Prepare audio file
         if (!empty($question->id)) {
             $draftitemid = file_get_submitted_draft_itemid('audiofile');
@@ -159,7 +151,7 @@ class qtype_dictation_edit_form extends question_edit_form {
      * @return array array of errors
      */
     public function validation($data, $files) {
-        global  $USER;
+        global $USER;
         $errors = parent::validation($data, $files);
 
         // Validate transcript has gaps

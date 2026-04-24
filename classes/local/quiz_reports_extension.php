@@ -89,7 +89,7 @@ class quiz_reports_extension {
         $quizexporturl = new moodle_url('/question/type/dictation/export_quiz.php', 
             array('quizid' => $quizid));
         $content .= html_writer::link($quizexporturl, 
-            get_string('exportallquizdata', 'qtype_dictation') . " ($totalattempts attempts)",
+            get_string('exportallquizdata', 'qtype_dictation') . ' (' . get_string('attemptscount', 'qtype_dictation', $totalattempts) . ')',
             array('class' => 'btn btn-primary btn-lg')
         );
         

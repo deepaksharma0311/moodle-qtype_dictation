@@ -63,6 +63,9 @@ $string['nogapsfound'] = 'No gaps found in transcript. Please mark at least one 
 
 // Audio player
 $string['play'] = 'Play';
+$string['pause'] = 'Pause';
+$string['playaudio'] = 'Play Audio';
+$string['audioerror'] = 'Audio Error';
 $string['playlimitreached'] = 'Play limit reached';
 $string['playcount'] = 'Played {$a->current} of {$a->max} times';
 $string['audionotsupported'] = 'Your browser does not support audio playback.';
@@ -82,6 +85,8 @@ $string['preview'] = 'Preview';
 
 // Export
 $string['exportcsv'] = 'Export CSV';
+$string['exportcsvwithcount'] = 'Export to CSV ({$a})';
+$string['attemptscount'] = '{$a} attempts';
 $string['exportall'] = 'Export all responses';
 $string['exportfilename'] = 'dictation_responses_{$a}.csv';
 $string['exportheader_student'] = 'Student';
@@ -96,12 +101,15 @@ $string['exportheader_timecreated'] = 'Time Created';
 
 // Privacy
 $string['privacy:metadata:qtype_dictation_attempts'] = 'Information about user attempts on dictation questions.';
+$string['privacy:metadata:qtype_dictation_attempts:questionid'] = 'The ID of the question that was attempted.';
 $string['privacy:metadata:qtype_dictation_attempts:userid'] = 'The ID of the user who made the attempt.';
+$string['privacy:metadata:qtype_dictation_attempts:attemptid'] = 'The ID of the question attempt.';
 $string['privacy:metadata:qtype_dictation_attempts:responses'] = 'The responses given by the user.';
 $string['privacy:metadata:qtype_dictation_attempts:scores'] = 'The scores achieved for each gap.';
 $string['privacy:metadata:qtype_dictation_attempts:totalscore'] = 'The total score for the attempt.';
 $string['privacy:metadata:qtype_dictation_attempts:playcount'] = 'The number of times the user played the audio.';
 $string['privacy:metadata:qtype_dictation_attempts:timecreated'] = 'The time when the attempt was created.';
+$string['privacy:metadata:qtype_dictation_attempts:timemodified'] = 'The time when the attempt was last modified.';
 // Scoring method strings
 $string['scoringmethod'] = 'Scoring method';
 $string['scoringtraditional'] = 'Traditional (all or nothing)';

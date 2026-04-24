@@ -127,20 +127,19 @@ class qtype_dictation_question extends question_graded_automatically {
         $totalweight = 0;
         $totalcorrect = 0;
         $gapscores = array();
+        
         for ($i = 0; $i < count($this->gaps); $i++) {
             $gapkey = 'gap_' . $i;
             $correctword = $this->gaps[$i];
             $correctwordwg = $this->gaps[$i][0];
-
             $studentword = isset($response[$gapkey]) ? $response[$gapkey] : '';
             
             // Calculate word weight based on length
-             $scoringmethod = isset($this->scoringmethod) ? $this->scoringmethod : 'levenshtein';
-        
+            $scoringmethod = isset($this->scoringmethod) ? $this->scoringmethod : 'levenshtein';
+            
             if ($scoringmethod === 'traditional') {
                 $wordweight = 1.0;
-            }
-            else{
+            } else {
                 $wordweight = strlen($correctwordwg);
             }
             
@@ -175,24 +174,19 @@ class qtype_dictation_question extends question_graded_automatically {
         if (empty($correct) || empty($student)) {
             return 0.0;
         }
-       
-        $student =  $this->normalize_answer($student);
         
-        // Normalize case for comparison
-       // $correct = strtolower(trim($correct));
-       // $student = strtolower(trim($student));
-         // Normalize student input
+        $student = $this->normalize_answer($student);
         $student = strtolower(trim($student));
         
         // Handle multiple correct answers
-        $correctAnswers = is_array($correct) ? $correct : array($correct);
-        $bestScore = 0.0;
+        $correct_answers = is_array($correct) ? $correct : array($correct);
+        $best_score = 0.0;
 
-        foreach ($correctAnswers as $correctWord) {
-            $correctWord = $this->normalize_answer($correctWord);
-            $correctWord = strtolower(trim($correctWord));
-            $score = $this->calculate_single_word_score($correctWord, $student);
-            $bestScore = max($bestScore, $score);
+        foreach ($correct_answers as $correct_word) {
+            $correct_word = $this->normalize_answer($correct_word);
+            $correct_word = strtolower(trim($correct_word));
+            $score = $this->calculate_single_word_score($correct_word, $student);
+            $best_score = max($best_score, $score);
             
             // If we get a perfect match, no need to check other alternatives
             if ($score >= 1.0) {
@@ -200,7 +194,7 @@ class qtype_dictation_question extends question_graded_automatically {
             }
         }
         
-        return $bestScore;
+        return $best_score;
     }
 
     public function normalize_answer(string $s): string {
@@ -269,17 +263,15 @@ class qtype_dictation_question extends question_graded_automatically {
      */
     public function summarise_response(array $response) {
         $parts = array();
-       
+        
         for ($i = 0; $i < count($this->gaps); $i++) {
             $gapkey = 'gap_' . $i;
             if (isset($response[$gapkey]) && $response[$gapkey] !== '') {
                 if (is_array($response[$gapkey])) {
                     $parts[] = $response[$gapkey][0];
-                }
-                else{
+                } else {
                     $parts[] = $response[$gapkey];
                 }
-              
             }
         }
         
@@ -348,11 +340,11 @@ class qtype_dictation_question extends question_graded_automatically {
             
             $wordscore = $this->calculate_word_score($correctword, $studentword);
             // Format correct answer(s) for display
-            $correctDisplay = is_array($correctword) ? implode(' / ', $correctword) : $correctword;
+            $correct_display = is_array($correctword) ? implode(' / ', $correctword) : $correctword;
             
             $feedback[] = array(
                 'gap' => $i,
-                'correct' => $correctDisplay,
+                'correct' => $correct_display,
                 'student' => $studentword,
                 'score' => $wordscore,
                 'iscorrect' => $wordscore >= 1.0 // Consider 80% or higher as correct
@@ -443,13 +435,10 @@ class qtype_dictation_question extends question_graded_automatically {
             return intval($PAGE->url->get_param('attempt'));
         }
         
-        // Method 2: Try to get from HTTP parameters
-        if (isset($_GET['attempt'])) {
-            return intval($_GET['attempt']);
-        }
-        
-        if (isset($_POST['attempt'])) {
-            return intval($_POST['attempt']);
+        // Method 2: Try to get from HTTP parameters using Moodle's secure parameter handling
+        $attempt = optional_param('attempt', null, PARAM_INT);
+        if ($attempt !== null) {
+            return $attempt;
         }
         
         // Method 3: Try to get from current question usage

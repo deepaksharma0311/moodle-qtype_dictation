@@ -64,7 +64,7 @@ class export_csv {
         $attempts = $DB->get_records_sql($sql, array($questionid));
 
         if (empty($attempts)) {
-            print_error('noattempts', 'qtype_dictation');
+            throw new \moodle_exception('noattempts', 'qtype_dictation');
         }
 
         // Prepare CSV data
@@ -145,9 +145,9 @@ class export_csv {
                 $gapscore = isset($scores[$i]) ? $scores[$i] : 0;
                 
                 // Get correct answer(s) - handle multiple alternatives
-                $correctAnswers = is_array($gaps[$i]) ? $gaps[$i] : array($gaps[$i]);
-                $correctDisplay = implode(' / ', $correctAnswers);
-                 $row[] = $correctDisplay;
+                $correct_answers = is_array($gaps[$i]) ? $gaps[$i] : array($gaps[$i]);
+                $correct_display = implode(' / ', $correct_answers);
+                 $row[] = $correct_display;
                 $row[] = $studentword;
                 $row[] = round($gapscore, 4);
                
@@ -206,7 +206,7 @@ class export_csv {
         $questions = $DB->get_records_sql($sql, array($quizid));
 
         if (empty($questions)) {
-            print_error('nodictationquestions', 'qtype_dictation');
+            throw new \moodle_exception('nodictationquestions', 'qtype_dictation');
         }
 
         // Get all attempts for these questions
@@ -229,7 +229,7 @@ class export_csv {
         $attempts = $DB->get_records_sql($attemptsql, $params);
 
         if (empty($attempts)) {
-            print_error('noattemptsfound', 'qtype_dictation');
+            throw new \moodle_exception('noattemptsfound', 'qtype_dictation');
         }
 
         // Prepare CSV data
@@ -329,12 +329,12 @@ class export_csv {
                     $gapscore = isset($scores[$i]) ? $scores[$i] : 0;
                     
                     // Get correct answer(s)
-                    $correctAnswers = is_array($gaps[$i]) ? $gaps[$i] : array($gaps[$i]);
-                    $correctDisplay = implode(' / ', $correctAnswers);
+                    $correct_answers = is_array($gaps[$i]) ? $gaps[$i] : array($gaps[$i]);
+                    $correct_display = implode(' / ', $correct_answers);
                     
                     $row[] = $studentword;
                     $row[] = round($gapscore, 4);
-                    $row[] = $correctDisplay;
+                    $row[] = $correct_display;
                 } else {
                     // Empty gaps for questions with fewer gaps
                     $row[] = '';
@@ -362,39 +362,5 @@ class export_csv {
         }
         
         $csvexport->download_file();
-    }
-
-
-
-    /**
-     * Calculate word score using normalized Levenshtein distance.
-     *
-     * @param string $correct The correct word
-     * @param string $student The student's input
-     * @return float Score between 0 and 1
-     */
-    private static function calculate_word_score($correct, $student) {
-        if (empty($correct) && empty($student)) {
-            return 1.0;
-        }
-        
-        if (empty($correct) || empty($student)) {
-            return 0.0;
-        }
-        
-        // Normalize case for comparison
-        $correct = strtolower(trim($correct));
-        $student = strtolower(trim($student));
-        
-        if ($correct === $student) {
-            return 1.0;
-        }
-        
-        // Calculate Levenshtein distance
-        $distance = levenshtein($correct, $student);
-        $maxlength = max(strlen($correct), strlen($student));
-        
-        // Normalized score: 1 - (distance / max_length)
-        return max(0, 1 - ($distance / $maxlength));
     }
 }

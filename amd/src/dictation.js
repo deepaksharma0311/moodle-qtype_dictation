@@ -1,9 +1,38 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * AMD module for dictation question type functionality.
+ *
+ * @module     qtype_dictation/dictation
+ * @package    qtype_dictation
+ * @copyright  2025 Deepak Sharma <deepak@palinfocom.net>
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 define(['jquery'], function($) {
     'use strict';
 
     var playCount = 0;
     var maxPlays = 0;
     var enableAudio = true;
+    var strings = {
+        playaudio: 'Play Audio',
+        playlimitreached: 'Play limit reached',
+        audioerror: 'Audio Error'
+    };
 
     /**
      * Initialize the dictation question functionality.
@@ -12,11 +41,17 @@ define(['jquery'], function($) {
      * @param {number} params.questionid The question ID
      * @param {number} params.maxplays Maximum number of plays allowed
      * @param {boolean} params.enableaudio Whether audio is enabled
+     * @param {number} params.qaid Question attempt ID
+     * @param {Object} params.strings Localized strings
      */
-    function init(questionid,maxplays,enableaudio, qaid) {
+    function init(questionid, maxplays, enableaudio, qaid, localizedStrings) {
         maxPlays = maxplays || 0;
+        enableAudio = enableaudio;
         
-        enableAudio = enableaudio;    
+        // Override default strings with localized ones if provided
+        if (localizedStrings) {
+            strings = localizedStrings;
+        }    
         $( document ).ready(function() {
       
         var questionContainer = $('#q'+questionid);
@@ -124,7 +159,7 @@ define(['jquery'], function($) {
         // Audio error handler
         audioElement.on('error', function() {
             console.error('Audio failed to load');
-            playButton.prop('disabled', true).text('Audio Error');
+            playButton.prop('disabled', true).text(strings.audioerror);
             hasPlayedCurrentSession = false;
             isPlaying = false;
         });
@@ -180,10 +215,10 @@ define(['jquery'], function($) {
         function updateButtonState() {
             if (!canPlay()) {
                 playButton.prop('disabled', true);
-                playButton.find('.btn-text').text('Play limit reached');
+                playButton.find('.btn-text').text(strings.playlimitreached);
             } else {
                 playButton.prop('disabled', false);
-                playButton.find('.btn-text').text('Play Audio');
+                playButton.find('.btn-text').text(strings.playaudio);
             }
         }
 
